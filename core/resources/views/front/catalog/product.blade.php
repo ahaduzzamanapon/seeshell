@@ -292,17 +292,16 @@
                                 <span class="text-danger  d-inline-block">{{ __('Out of stock') }}</span>
                             @endif --}}
                         </div>
-
-
                         @if ($item->is_type == 'flash_deal')
                             @if (date('d-m-y') != \Carbon\Carbon::parse($item->date)->format('d-m-y'))
                                 <div class="countdown countdown-alt mb-3" data-date-time="{{ $item->date }}">
                                 </div>
                             @endif
                         @endif
-
                         <span class="h3 d-block price-area">
-                            @if ($item->previous_price != 0)
+                            @if (
+                                $item->previous_price != 0 &&
+                                    PriceHelper::setPreviousPrice($item->previous_price) != PriceHelper::grandCurrencyPrice($item))
                                 <small
                                     class="d-inline-block"><del>{{ PriceHelper::setPreviousPrice($item->previous_price) }}</del></small>
                                 +
@@ -423,7 +422,7 @@
                                                             value="{{ $option->name }}" data-type="{{ $attribute->id }}"
                                                             data-href="{{ $option->id }}"
                                                             data-target="{{ PriceHelper::setConvertPrice($option->price) }}"
-                                                            {{ $key == 0 ? 'checked' : '' }}>
+                                                            >
                                                         <span class="radio-tile">
 
                                                             <span class="radio-label">{{ $option->name }}</span>
@@ -449,16 +448,17 @@
                         <div class="row align-items-end pb-4">
                             <div class="col-sm-12">
                                 @if ($item->item_type == 'normal')
-                                    <div class="qtySelector product-quantity">
+                                    <div class="qtySelector product-quantity d-none">
                                         <span class="decreaseQty subclick"><i class="fas fa-minus "></i></span>
                                         <input type="text" class="qtyValue cart-amount" value="1">
                                         <span class="increaseQty addclick"><i class="fas fa-plus"></i></span>
                                         <input type="hidden" value="3333" id="current_stock">
                                     </div>
                                 @endif
-
+                                
                                 <div class="p-action-button">
                                     @if ($item->item_type != 'affiliate')
+                                        
                                         @if ($item->is_stock())
                                             <button class="btn btn-primary m-0 a-t-c-mr" id="add_to_cart"><i
                                                     class="icon-bag"></i><span>{{ __('Add to Cart') }}</span></button>
@@ -480,6 +480,8 @@
                         </div>
 
                         <div class="div">
+                        <button class="btn btn-primary m-0 a-t-c-mr" id="add_to_cart"><i
+                                                    class="icon-bag"></i><span>Try This Online</span></button>
                             <div class="t-c-b-area">
 
                                 <style>

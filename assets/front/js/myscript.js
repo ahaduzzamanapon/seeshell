@@ -980,6 +980,8 @@ $(function ($) {
           return $(el).attr("data-href");
         })
         .get();
+        console.log(options_ids,attribute_ids);
+        
 
       let quantity;
 

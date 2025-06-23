@@ -1,0 +1,9 @@
+/vendor
+**/vendor/
+/vendor/
+core/vendor/
+**/vendor/
+/node_modules/
+.env
+.DS_Store
+*.log

@@ -22,6 +22,35 @@
 
 
 @section('content')
+
+
+    <style>
+        body {
+            background-position: center;
+            background-color: #ffffff;
+            background-repeat: no-repeat;
+            background-size: cover;
+            font-family: "Open Sans", sans-serif;
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        .details-page-top-right-content {
+            background: #ffffff;
+            padding: 0px 72px 7px;
+            border-radius: 10px;
+            height: 100%;
+        }
+
+        .product-gallery {
+            position: relative;
+            border-radius: 10px;
+            background: #ffffff;
+            padding-bottom: 1px;
+            overflow: hidden;
+        }
+    </style>
     <div class="page-title">
         <div class="container">
             <div class="row">
@@ -43,7 +72,7 @@
     <div class="container padding-bottom-1x mb-1">
         <div class="row">
             <!-- Poduct Gallery-->
-            <div class="col-xxl-5 col-lg-6 col-md-6">
+            <div class="col-xxl-6 col-lg-6 col-md-6">
                 <div class="product-gallery">
                     @if ($item->video)
                         <div class="gallery-wrapper">
@@ -69,27 +98,182 @@
                         <span class="product-badge bg-secondary border-default text-body">{{ __('out of stock') }}</span>
                     @endif
 
-                    @if ($item->previous_price && $item->previous_price != 0)
-                        <div class="product-badge bg-goldenrod  ppp-t"> -{{ PriceHelper::DiscountPercentage($item) }}</div>
-                    @endif
 
-                    <div class="product-thumbnails insize">
-                        <div class="product-details-slider owl-carousel">
-                            <div class="item"><img src="{{ url('/core/public/storage/images/' . $item->photo) }}"
-                                    alt="zoom" />
-                            </div>
+                    <style>
+                        .gallery-wrapper {
+                            display: flex;
+                            gap: 20px;
+                            max-width: 900px;
+                            margin: 30px auto;
+                        }
+
+                        .thumbnail-list {
+                            width: 100px;
+                            display: flex;
+                            flex-direction: column;
+                            gap: 10px;
+                        }
+
+                        .thumbnail-list img {
+                            width: 100%;
+                            border: 2px solid transparent;
+                            cursor: pointer;
+                        }
+
+                        .thumbnail-list img.selected {
+                            border-color: gray;
+                        }
+
+                        .image-display {
+                            flex: 1;
+                            position: relative;
+                            overflow: hidden;
+                        }
+
+                        .image-zoom-wrapper {
+                            position: relative;
+                            /* for lens positioning */
+                        }
+
+                        .main-product-image {
+                            width: 100%;
+                            max-height: 500px;
+                            object-fit: contain;
+                            display: block;
+                        }
+
+                        .lens-box {
+                            position: absolute;
+                            border: 1px solid #ccc;
+                            width: 100px;
+                            height: 100px;
+                            opacity: 0.4;
+                            background: #fff;
+                            display: none;
+                            cursor: crosshair;
+                            pointer-events: none;
+                            z-index: 10;
+                        }
+
+                        .zoom-window {
+                            width: 18%;
+                            height: 38%;
+                            position: absolute;
+                            left: 48.9%;
+                            top: 29.7%;
+                            border: 1px solid #ddd;
+                            display: none;
+                            overflow: hidden;
+                            z-index: 1000000000;
+                            background: #fff;
+                        }
+
+                        .zoom-window img {
+                            position: absolute;
+                            width: auto;
+                            height: auto;
+                            max-width: none;
+                            /* allow scaling */
+                        }
+                    </style>
+
+                    <div class="gallery-wrapper">
+                        <div class="thumbnail-list">
+
+
+                            <img class="thumbnail selected" src="{{ url('/core/public/storage/images/' . $item->photo) }}"
+                                data-full="{{ url('/core/public/storage/images/' . $item->photo) }}" alt="Thumbnail 1">
+
                             @foreach ($galleries as $key => $gallery)
-                                <div class="item"><img src="{{ url('/core/public/storage/images/' . $gallery->photo) }}"
-                                        alt="zoom" /></div>
+                                <img class="thumbnail" src="{{ url('/core/public/storage/images/' . $gallery->photo) }}"
+                                    data-full="{{ url('/core/public/storage/images/' . $gallery->photo) }}"
+                                    alt="Thumbnail 2">
                             @endforeach
+
+
+                        </div>
+                        <div class="image-display image-zoom-wrapper">
+                            <img id="mainProdImg" class="main-product-image"
+                                src="{{ url('/core/public/storage/images/' . $item->photo) }}" alt="Main Product Image">
+                            <div class="lens-box" id="lensBox"></div>
                         </div>
                     </div>
+
+
+
+
                 </div>
             </div>
+            <div class="zoom-window" id="zoomWindow">
+                <img id="zoomedImg" src="{{ url('/core/public/storage/images/' . $item->photo) }}" alt="Zoomed Image">
+            </div>
+            <script>
+                const thumbnails = document.querySelectorAll('.thumbnail');
+                const mainProdImg = document.getElementById('mainProdImg');
+                const lensBox = document.getElementById('lensBox');
+                const zoomWindow = document.getElementById('zoomWindow');
+                const zoomedImg = document.getElementById('zoomedImg');
+                const zoomWrapper = document.querySelector('.image-zoom-wrapper');
+
+                // Change main image and zoom on thumbnail click
+                thumbnails.forEach(thumb => {
+                    thumb.addEventListener('click', () => {
+                        thumbnails.forEach(t => t.classList.remove('selected'));
+                        thumb.classList.add('selected');
+                        mainProdImg.src = thumb.dataset.full;
+                        zoomedImg.src = thumb.dataset.full;
+                    });
+                });
+
+                zoomWrapper.addEventListener('mouseenter', () => {
+                    lensBox.style.display = 'block';
+                    zoomWindow.style.display = 'block';
+                    updateZoomImageSize();
+                });
+
+                zoomWrapper.addEventListener('mouseleave', () => {
+                    lensBox.style.display = 'none';
+                    zoomWindow.style.display = 'none';
+                });
+
+                zoomWrapper.addEventListener('mousemove', (e) => {
+                    const rect = zoomWrapper.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+
+                    const lensX = Math.max(0, Math.min(x - lensBox.offsetWidth / 2, zoomWrapper.offsetWidth - lensBox
+                        .offsetWidth));
+                    const lensY = Math.max(0, Math.min(y - lensBox.offsetHeight / 2, zoomWrapper.offsetHeight - lensBox
+                        .offsetHeight));
+
+                    lensBox.style.left = lensX + 'px';
+                    lensBox.style.top = lensY + 'px';
+
+                    const scaleX = zoomWindow.offsetWidth / lensBox.offsetWidth;
+                    const scaleY = zoomWindow.offsetHeight / lensBox.offsetHeight;
+
+                    zoomedImg.style.width = mainProdImg.width * scaleX + 'px';
+                    zoomedImg.style.height = mainProdImg.height * scaleY + 'px';
+
+                    zoomedImg.style.left = -lensX * scaleX + 'px';
+                    zoomedImg.style.top = -lensY * scaleY + 'px';
+                });
+
+                function updateZoomImageSize() {
+                    const scaleX = zoomWindow.offsetWidth / lensBox.offsetWidth;
+                    const scaleY = (zoomWindow.offsetHeight / lensBox.offsetHeight);
+                    zoomedImg.style.width = mainProdImg.width * scaleX + 'px';
+                    zoomedImg.style.height = 'auto'; // Maintain aspect ratio
+                }
+
+                mainProdImg.addEventListener('load', updateZoomImageSize);
+            </script>
             <!-- Product Info-->
-            <div class="col-xxl-7 col-lg-6 col-md-6">
-                <div class="details-page-top-right-content d-flex align-items-center">
+            <div class="col-xxl-6 col-lg-6 col-md-6">
+                <div class="details-page-top-right-content d-flex">
+
                     <div class="div w-100">
+
                         <input type="hidden" id="item_id" value="{{ $item->id }}">
                         <input type="hidden" id="demo_price"
                             value="{{ PriceHelper::setConvertPrice($item->discount_price) }}">
@@ -101,12 +285,12 @@
                             <div class="rating-stars d-inline-block gmr-3">
                                 {!! Helper::renderStarRating($item->reviews->avg('rating')) !!}
                             </div>
-                            @if ($item->is_stock())
+                            {{-- @if ($item->is_stock())
                                 <span class="text-success  d-inline-block">{{ __('In Stock') }} <b>({{ $item->stock }}
                                         @lang('items'))</b></span>
                             @else
                                 <span class="text-danger  d-inline-block">{{ __('Out of stock') }}</span>
-                            @endif
+                            @endif --}}
                         </div>
 
 
@@ -121,32 +305,147 @@
                             @if ($item->previous_price != 0)
                                 <small
                                     class="d-inline-block"><del>{{ PriceHelper::setPreviousPrice($item->previous_price) }}</del></small>
+                                +
                             @endif
                             <span id="main_price" class="main-price">{{ PriceHelper::grandCurrencyPrice($item) }}</span>
+                            <span style="font-size: 16px;color: gray;">+vat</span>
                         </span>
+                        @if ($item->item_type == 'normal')
+                            <div class="pt-1 mb-4"><span class="text-medium">{{ __('SKU') }}:</span>
+                                #{{ $item->sku }}</div>
+                        @endif
+                        <style>
+                            /* From Uiverse.io by Yaya12085 */
+                            .radio-inputs {
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                max-width: 350px;
+                                -webkit-user-select: none;
+                                -moz-user-select: none;
+                                -ms-user-select: none;
+                                user-select: none;
+                            }
 
-                        <p class="text-muted">{{ $item->sort_details }} <a href="#details"
-                                class="scroll-to">{{ __('Read more') }}</a></p>
+                            .radio-inputs>* {
+                                margin: 6px;
+                            }
+
+
+
+                            .radio-input:checked+.radio-tile:before {
+                                transform: scale(1);
+                                opacity: 1;
+                                background-color: gray;
+                                border-color: black;
+                            }
+
+                            .radio-input:checked+.radio-tile .radio-label {
+                                color: #000000;
+                                font-weight: 600;
+                            }
+
+
+
+                            .radio-input:focus+.radio-tile {
+                                border-color: black;
+                            }
+
+                            .radio-input:focus+.radio-tile:before {
+                                transform: scale(1);
+                                opacity: 1;
+                            }
+
+
+                            .radio-tile {
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                                justify-content: center;
+                                border: 1px solid black;
+                                background-color: #fff;
+                                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+                                transition: 0.15s ease;
+                                cursor: pointer;
+                                position: relative;
+                                padding: 4px 18px;
+                            }
+
+
+                            .radio-tile:hover {
+                                /* border-color: #2260ff; */
+                                background-color: #f0f0f0;
+                            }
+
+
+                            .radio-input:checked+.radio-tile {
+                                border-color: #959595;
+                                color: black;
+                                background: #dddcdc;
+                            }
+
+                            .radio-label {
+                                color: #707070;
+                                transition: 0.375s ease;
+                                text-align: center;
+                                font-size: 13px;
+                            }
+
+                            .radio-input {
+                                clip: rect(0 0 0 0);
+                                -webkit-clip-path: inset(100%);
+                                clip-path: inset(100%);
+                                height: 1px;
+                                overflow: hidden;
+                                position: absolute;
+                                white-space: nowrap;
+                                width: 1px;
+                            }
+
+                            .custom-radio {
+                                margin: 0px 6px;
+                            }
+                        </style>
+
+
 
                         <div class="row margin-top-1x">
                             @foreach ($attributes as $attribute)
                                 @if ($attribute->options->count() != 0)
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-12">
                                         <div class="form-group">
-                                            <label for="{{ $attribute->name }}">{{ $attribute->name }}</label>
-                                            <select class="form-control attribute_option" id="{{ $attribute->name }}">
-                                                @foreach ($attribute->options->where('stock', '!=', '0') as $option)
-                                                    <option value="{{ $option->name }}" data-type="{{ $attribute->id }}"
-                                                        data-href="{{ $option->id }}"
-                                                        data-target="{{ PriceHelper::setConvertPrice($option->price) }}">
-                                                        {{ $option->name }}</option>
+                                            <label class="d-block font-weight-bold">{{ $attribute->name }}</label>
+                                            <div class="attribute_option " data-attr="{{ $attribute->id }}">
+                                                @foreach ($attribute->options->where('stock', '!=', '0') as $key => $option)
+                                                    <label class="custom-radio {{ $key == 0 ? 'active' : '' }}">
+                                                        <input class="radio-input d-none" type="radio"
+                                                            name="attribute_{{ $attribute->id }}"
+                                                            value="{{ $option->name }}" data-type="{{ $attribute->id }}"
+                                                            data-href="{{ $option->id }}"
+                                                            data-target="{{ PriceHelper::setConvertPrice($option->price) }}"
+                                                            {{ $key == 0 ? 'checked' : '' }}>
+                                                        <span class="radio-tile">
+
+                                                            <span class="radio-label">{{ $option->name }}</span>
+                                                        </span>
+                                                    </label>
                                                 @endforeach
-                                            </select>
+                                            </div>
                                         </div>
                                     </div>
                                 @endif
                             @endforeach
                         </div>
+
+
+
+
+
+
+
+
+
+
                         <div class="row align-items-end pb-4">
                             <div class="col-sm-12">
                                 @if ($item->item_type == 'normal')
@@ -157,6 +456,7 @@
                                         <input type="hidden" value="3333" id="current_stock">
                                     </div>
                                 @endif
+
                                 <div class="p-action-button">
                                     @if ($item->item_type != 'affiliate')
                                         @if ($item->is_stock())
@@ -181,142 +481,146 @@
 
                         <div class="div">
                             <div class="t-c-b-area">
-                                @if ($item->brand_id)
-                                    <div class="pt-1 mb-1"><span class="text-medium">{{ __('Brand') }}:</span>
+
+                                <style>
+                                    .collapsible {
+                                        background-color: #ffffff;
+                                        color: gray;
+                                        cursor: pointer;
+                                        padding: 7px 6px;
+                                        width: 100%;
+                                        border: none;
+                                        text-align: left;
+                                        outline: none;
+                                        font-size: 16px;
+                                        border-bottom: 1px solid #ddd;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: space-between;
+                                    }
+
+                                    .collapsible .icon {
+                                        font-size: 18px;
+                                        transition: transform 0.3s ease;
+                                    }
+
+                                    .active_aa .icon {
+                                        transform: rotate(90deg);
+                                    }
+
+                                    .content_aa {
+                                        padding: 0 18px;
+                                        max-height: 0;
+                                        overflow: hidden;
+                                        transition: max-height 0.3s ease-out;
+                                        background-color: #ffffff;
+                                        margin-top: 5px;
+                                    }
+                                </style>
+
+                                <!-- First Collapsible -->
+                                <button type="button" class="collapsible">
+                                    Product info
+                                    <span class="icon">&#9654;</span>
+                                </button>
+                                <div class="content_aa">
+                                    <div class="pt-1 mb-1"><span class="text-medium">{{ __('Categories') }}:</span>
                                         <a
-                                            href="{{ route('front.catalog') . '?brand=' . $item->brand->slug }}">{{ $item->brand->name }}</a>
-                                    </div>
-                                @endif
-
-                                <div class="pt-1 mb-1"><span class="text-medium">{{ __('Categories') }}:</span>
-                                    <a
-                                        href="{{ route('front.catalog') . '?category=' . $item->category->slug }}">{{ $item->category->name }}</a>
-                                    @if ($item->subcategory->name)
-                                        /
-                                    @endif
-                                    <a
-                                        href="{{ route('front.catalog') . '?subcategory=' . $item->subcategory->slug }}">{{ $item->subcategory->name }}</a>
-                                    @if ($item->childcategory->name)
-                                        /
-                                    @endif
-                                    <a
-                                        href="{{ route('front.catalog') . '?childcategory=' . $item->childcategory->slug }}">{{ $item->childcategory->name }}</a>
-                                </div>
-                                <div class="pt-1 mb-1"><span class="text-medium">{{ __('Tags') }}:</span>
-                                    @if ($item->tags)
-                                        @foreach (explode(',', $item->tags) as $tag)
-                                            @if ($loop->last)
-                                                <a
-                                                    href="{{ route('front.catalog') . '?tag=' . $tag }}">{{ $tag }}</a>
-                                            @else
-                                                <a
-                                                    href="{{ route('front.catalog') . '?tag=' . $tag }}">{{ $tag }}</a>,
-                                            @endif
-                                        @endforeach
-                                    @endif
-                                </div>
-                                @if ($item->item_type == 'normal')
-                                    <div class="pt-1 mb-4"><span class="text-medium">{{ __('SKU') }}:</span>
-                                        #{{ $item->sku }}</div>
-                                @endif
-                            </div>
-
-                            <div class="mt-4 p-d-f-area">
-                                <div class="left">
-                                    <a class="btn btn-primary btn-sm wishlist_store wishlist_text"
-                                        href="{{ route('user.wishlist.store', $item->id) }}"><span><i
-                                                class="icon-heart"></i></span>
-                                        @if (Auth::check() &&
-                                                App\Models\Wishlist::where('user_id', Auth::user()->id)->where('item_id', $item->id)->exists())
-                                            <span>{{ __('Added To Wishlist') }}</span>
-                                        @else
-                                            <span class="wishlist1">{{ __('Wishlist') }}</span>
-                                            <span class="wishlist2 d-none">{{ __('Added To Wishlist') }}</span>
+                                            href="{{ route('front.catalog') . '?category=' . $item->category->slug }}">{{ $item->category->name }}</a>
+                                        @if ($item->subcategory->name)
+                                            /
                                         @endif
-                                    </a>
-                                    <button class="btn btn-primary btn-sm  product_compare"
-                                        data-target="{{ route('fornt.compare.product', $item->id) }}"><span><i
-                                                class="icon-repeat"></i>{{ __('Compare') }}</span></button>
-                                </div>
-
-                                <div class="d-flex align-items-center">
-                                    <span class="text-muted mr-1">{{ __('Share') }}: </span>
-                                    <div class="d-inline-block a2a_kit">
-                                        <a class="facebook  a2a_button_facebook" href="">
-                                            <span><i class="fab fa-facebook-f"></i></span>
-                                        </a>
-                                        <a class="twitter  a2a_button_twitter" href="">
-                                            <span><i class="fab fa-twitter"></i></span>
-                                        </a>
-                                        <a class="linkedin  a2a_button_linkedin" href="">
-                                            <span><i class="fab fa-linkedin-in"></i></span>
-                                        </a>
-                                        <a class="pinterest   a2a_button_pinterest" href="">
-                                            <span><i class="fab fa-pinterest"></i></span>
-                                        </a>
+                                        <a
+                                            href="{{ route('front.catalog') . '?subcategory=' . $item->subcategory->slug }}">{{ $item->subcategory->name }}</a>
+                                        @if ($item->childcategory->name)
+                                            /
+                                        @endif
+                                        <a
+                                            href="{{ route('front.catalog') . '?childcategory=' . $item->childcategory->slug }}">{{ $item->childcategory->name }}</a>
                                     </div>
-                                    <script async src="https://static.addtoany.com/menu/page.js"></script>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class=" padding-top-3x mb-3" id="details">
-                <div class="col-lg-12">
-                    <ul class="nav nav-tabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link active" id="description-tab" data-bs-toggle="tab"
-                                data-bs-target="#description" type="button" role="tab" aria-controls="description"
-                                aria-selected="true">{{ __('Descriptions') }}</a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link" id="specification-tab" data-bs-toggle="tab"
-                                data-bs-target="#specification" type="button" role="tab"
-                                aria-controls="specification" aria-selected="false">{{ __('Specifications') }}</a>
-                        </li>
-                    </ul>
-                    <div class="tab-content card">
-                        <div class="tab-pane fade show active" id="description" role="tabpanel"
-                            aria-labelledby="description-tab"">
-                            {!! $item->details !!}
-                        </div>
-                        <div class="tab-pane fade show" id="specification" role="tabpanel"
-                            aria-labelledby="specification-tab">
-                            <div class="comparison-table">
-                                <table class="table table-bordered">
-                                    <thead class="bg-secondary">
-                                    </thead>
-                                    <tbody>
-                                        <tr class="bg-secondary">
-                                            <th class="text-uppercase">{{ __('Specifications') }}</th>
-                                            <td><span class="text-medium">{{ __('Descriptions') }}</span></td>
-                                        </tr>
-                                        @if ($sec_name)
-                                            @foreach (array_combine($sec_name, $sec_details) as $sname => $sdetail)
-                                                <tr>
-                                                    <th>{{ $sname }}</th>
-                                                    <td>{{ $sdetail }}</td>
-                                                </tr>
+                                    <div class="pt-1 mb-1"><span class="text-medium">{{ __('Tags') }}:</span>
+                                        @if ($item->tags)
+                                            @foreach (explode(',', $item->tags) as $tag)
+                                                @if ($loop->last)
+                                                    <a
+                                                        href="{{ route('front.catalog') . '?tag=' . $tag }}">{{ $tag }}</a>
+                                                @else
+                                                    <a
+                                                        href="{{ route('front.catalog') . '?tag=' . $tag }}">{{ $tag }}</a>,
+                                                @endif
                                             @endforeach
-                                        @else
-                                            <tr class="text-center">
-                                                <td colspan="2">{{ __('No Specifications') }}</td>
-                                            </tr>
                                         @endif
-                                    </tbody>
-                                </table>
+                                    </div>
+                                </div>
+
+                                <!-- Second Collapsible (Example) -->
+                                <button type="button" class="collapsible">
+                                    Description
+                                    <span class="icon">&#9654;</span>
+                                </button>
+                                <div class="content_aa">
+                                    <p>
+                                        {!! $item->details !!}
+                                    </p>
+                                </div>
+                                <button type="button" class="collapsible">
+                                    Specifications
+                                    <span class="icon">&#9654;</span>
+                                </button>
+                                <div class="content_aa">
+                                    <div class="comparison-table">
+                                        <table class="table table-bordered">
+                                            <thead class="bg-secondary">
+                                            </thead>
+                                            <tbody>
+                                                <tr class="bg-secondary">
+                                                    <th class="text-uppercase">{{ __('Specifications') }}</th>
+                                                    <td><span class="text-medium">{{ __('Descriptions') }}</span></td>
+                                                </tr>
+                                                @if ($sec_name)
+                                                    @foreach (array_combine($sec_name, $sec_details) as $sname => $sdetail)
+                                                        <tr>
+                                                            <th>{{ $sname }}</th>
+                                                            <td>{{ $sdetail }}</td>
+                                                        </tr>
+                                                    @endforeach
+                                                @else
+                                                    <tr class="text-center">
+                                                        <td colspan="2">{{ __('No Specifications') }}</td>
+                                                    </tr>
+                                                @endif
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <script>
+                                    const collapsibles = document.querySelectorAll('.collapsible');
+                                    collapsibles.forEach(btn => {
+                                        btn.addEventListener('click', function() {
+                                            this.classList.toggle('active_aa');
+                                            const content = this.nextElementSibling;
+                                            if (content.style.maxHeight) {
+                                                content.style.maxHeight = null;
+                                            } else {
+                                                content.style.maxHeight = content.scrollHeight + "px";
+                                            }
+                                        });
+                                    });
+                                </script>
                             </div>
                         </div>
+
+
                     </div>
                 </div>
             </div>
         </div>
+
+    </div>
     </div>
 
 
-    <!-- Reviews-->
+    {{-- <!-- Reviews-->
     <div class="container  review-area">
         <div class="row">
             <div class="col-lg-12">
@@ -436,7 +740,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     @if (count($related_items) > 0)
         <div class="relatedproduct-section container padding-bottom-3x mb-1 s-pt-30">
@@ -496,9 +800,6 @@
                                             <a class="product-button wishlist_store"
                                                 href="{{ route('user.wishlist.store', $related->id) }}"
                                                 title="{{ __('Wishlist') }}"><i class="icon-heart"></i></a>
-                                            <a class="product-button product_compare" href="javascript:;"
-                                                data-target="{{ route('fornt.compare.product', $related->id) }}"
-                                                title="{{ __('Compare') }}"><i class="icon-repeat"></i></a>
                                             @include('includes.item_footer', ['sitem' => $related])
                                         </div>
                                     </div>
@@ -506,8 +807,7 @@
                                         <div class="product-category"><a
                                                 href="{{ route('front.catalog') . '?category=' . $related->category->slug }}">{{ $related->category->name }}</a>
                                         </div>
-                                        <h3 class="product-title"><a
-                                                href="{{ route('front.product', $related->slug) }}">
+                                        <h3 class="product-title"><a href="{{ route('front.product', $related->slug) }}">
                                                 {{ Str::limit($related->name, 35) }}
                                             </a></h3>
                                         <h4 class="product-price">
@@ -517,7 +817,6 @@
                                             {{ PriceHelper::grandCurrencyPrice($related) }}
                                         </h4>
                                     </div>
-
                                 </div>
                             </div>
                         @endforeach
@@ -526,7 +825,6 @@
             </div>
         </div>
     @endif
-
 
 
 

@@ -97,7 +97,6 @@
                                             @endif
                                             <img class="lazy" data-src="{{url('/core/public/storage/images/'.$item->thumbnail)}}" alt="Product">
                                             <div class="product-button-group"><a class="product-button wishlist_store" href="{{route('user.wishlist.store',$item->id)}}" title="{{__('Wishlist')}}"><i class="icon-heart"></i></a>
-                                                <a data-target="{{route('fornt.compare.product',$item->id)}}" class="product-button product_compare" href="javascript:;" title="{{__('Compare')}}"><i class="icon-repeat"></i></a>
                                                 @include('includes.item_footer',['sitem' => $item])
                                             </div>
                                         </div>
@@ -197,7 +196,7 @@
                                 @foreach ($products->orderBy('id','DESC')->get()  as $item)
                                 @if ($item->is_type == 'flash_deal' && $item->date != null)
                                     <div class="slider-item">
-                                        <div class="product-card ">
+                                        <div class="product-card">
                                             <div class="product-thumb">
                                                 @if (!$item->is_stock())
                                                 <div class="product-badge bg-secondary border-default text-body
@@ -208,7 +207,6 @@
                                                 @endif
                                                 <img class="lazy" data-src="{{url('/core/public/storage/images/'.$item->thumbnail)}}" alt="Product">
                                                 <div class="product-button-group"><a class="product-button wishlist_store" href="{{route('user.wishlist.store',$item->id)}}" title="{{__('Wishlist')}}"><i class="icon-heart"></i></a>
-                                                    <a data-target="{{route('fornt.compare.product',$item->id)}}" class="product-button product_compare" href="javascript:;" title="{{__('Compare')}}"><i class="icon-repeat"></i></a>
                                                     @include('includes.item_footer',['sitem' => $item])
                                                 </div>
                                             </div>
@@ -344,7 +342,6 @@
                                                     @endif
                                                 <img class="lazy" data-src="{{url('/core/public/storage/images/'.$item->thumbnail)}}" alt="Product">
                                                 <div class="product-button-group"><a class="product-button wishlist_store" href="{{route('user.wishlist.store',$item->id)}}" title="{{__('Wishlist')}}"><i class="icon-heart"></i></a>
-                                                    <a data-target="{{route('fornt.compare.product',$item->id)}}" class="product-button product_compare" href="javascript:;" title="{{__('Compare')}}"><i class="icon-repeat"></i></a>
                                                     @include('includes.item_footer',['sitem' => $item])
                                                 </div>
                                             </div>

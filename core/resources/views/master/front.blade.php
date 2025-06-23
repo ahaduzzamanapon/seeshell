@@ -214,6 +214,203 @@ body_theme4 @endif
             </div>
         </div>
         <!-- Topbar-->
+        <style>
+            /* .sub-link:hover {
+                color: black !important;
+            } */
+            .sub-link>a:hover {
+                color: black !important;
+            }
+
+
+            .navbar {
+                background-color: #fff;
+                border-bottom: 1px solid #eee;
+                padding: 16px 0;
+            }
+
+
+            .site-menu {
+                display: flex;
+                justify-content: center;
+                width: 100%;
+            }
+
+            .main-menu {
+                list-style: none;
+                display: flex;
+                gap: 40px;
+                justify-content: center;
+            }
+
+            .main-menu>li>a {
+                text-decoration: none;
+                color: #222;
+                font-weight: 600;
+                font-size: 16px;
+                padding: 10px;
+                display: inline-block;
+            }
+
+            .menu-item.has-dropdown {
+                position: relative;
+            }
+
+            .menu-link:hover {
+                color: red !important;
+            }
+
+            .menu-item.has-dropdown:hover>.dropdown {
+                display: flex;
+                /* animation: fadeIn 1.3s ease-in-out; */
+            }
+
+            .dropdown {
+                position: fixed;
+                top: 120px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 1000px;
+                background: #ffffff;
+                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+                padding: 30px 40px;
+                z-index: 1000;
+
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.4s ease, visibility 0.4s ease;
+                pointer-events: none;
+            }
+            .menu-item.has-dropdown:hover > .dropdown {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+
+            /*
+.dropdown {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.menu-item.has-dropdown:hover > .dropdown {
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
+} */
+
+            .dropdown-inner {
+                display: flex;
+                justify-content: space-between;
+                gap: 20px;
+                flex-wrap: wrap;
+            }
+
+            /* Grid Area */
+            .dropdown-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 30px;
+                flex: 1;
+            }
+
+            .dropdown-col h4 {
+                font-size: 16px;
+                font-weight: 600;
+                color: #3819e7;
+                margin-bottom: 10px;
+            }
+
+            .dropdown-col ul {
+                list-style: none;
+            }
+
+            .dropdown-col li {
+                margin-bottom: 8px;
+            }
+
+            .dropdown-col a {
+                text-decoration: none;
+                color: #333;
+                font-weight: 500;
+                transition: all 0.2s ease-in-out;
+            }
+
+            .dropdown-col a:hover {
+                color: #3819e7;
+            }
+
+            /* Right Side Image */
+            .dropdown-image {
+                width: 300px;
+                flex-shrink: 0;
+            }
+
+            .dropdown-image img {
+                width: 100%;
+                height: auto;
+                border-radius: 10px;
+                object-fit: cover;
+            }
+
+
+            /* Black & White Anchor Styling */
+            .dropdown_link_style {
+                font-size: 18px;
+                color: #333;
+                /* Dark gray text */
+                font-family: inherit;
+                font-weight: 800;
+                cursor: pointer;
+                position: relative;
+                border: none;
+                background: none;
+                text-transform: uppercase;
+                text-decoration: none;
+                transition: color 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
+            }
+
+            .dropdown_link_style:focus,
+            .dropdown_link_style:hover {
+                color: #000;
+                /* Pure black on hover */
+            }
+
+            .dropdown_link_style:after {
+                content: "";
+                pointer-events: none;
+                bottom: -2px;
+                left: 50%;
+                position: absolute;
+                width: 0%;
+                height: 2px;
+                background-color: #000;
+                /* Black underline */
+                transition: width 400ms cubic-bezier(0.25, 0.8, 0.25, 1), left 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
+            }
+
+            .dropdown_link_style:focus:after,
+            .dropdown_link_style:hover:after {
+                width: 100%;
+                left: 0%;
+            }
+
+
+            /* Animation */
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        </style>
         <div class="topbar">
             <div class="container">
                 <div class="row">
@@ -239,9 +436,14 @@ body_theme4 @endif
 
                                     @foreach ($categories as $category)
                                         <li class="menu-item has-dropdown">
-                                            <a href="{{ route('front.catalog') . '?category=' . $category->slug }}"
+                                            <a class="dropdown_link_style"
+                                                href="{{ route('front.catalog') . '?category=' . $category->slug }}"
                                                 style="font-size: 17px;font-weight: bolder;"><span class="menu-link"
                                                     style="text-transform: uppercase;">{{ $category->name }}</span></a>
+
+
+
+
                                             <div class="dropdown">
                                                 <div class="col-md-12">
                                                     <div class="row">
@@ -249,7 +451,7 @@ body_theme4 @endif
                                                             <div class="dropdown-grid">
 
                                                                 <ul
-                                                                    style="list-style: none;border-left: 2px solid #d7d7d7;">
+                                                                    style="list-style: none">
                                                                     @php
                                                                         $i = 0;
                                                                     @endphp
@@ -261,14 +463,14 @@ body_theme4 @endif
                                                                             @endphp
                                                                 </ul>
                                                                 <ul
-                                                                    style="list-style: none;border-left: 2px solid #d7d7d7;">
+                                                                    style="list-style: none;border-left: 1px solid #e5e5e5;">
                                     @endif
                                     @php
                                         $i++;
                                     @endphp
                                     <li>
                                         <a href="{{ route('front.catalog') . '?subcategory=' . $subcategory->slug }}"
-                                            style="font-size: 20px;/* font-weight: bolder; */color: Black!important;">{{ $subcategory->name }}</a>
+                                            style="color: Black!important;font-size: 1.2rem;font-weight: 500;font-family: 'futura-pt';text-transform: uppercase;">{{ $subcategory->name }}</a>
                                     </li>
                                     @foreach ($subcategory->childcategory as $childcategory)
                                         @if ($i > 7)
@@ -276,13 +478,13 @@ body_theme4 @endif
                                                 $i = 0;
                                             @endphp
                                 </ul>
-                                <ul style="list-style: none;border-left: 2px solid #d7d7d7;">
+                                <ul style="list-style: none;border-left: 1px solid #e5e5e5;">
                                     @endif
                                     @php
                                         $i++;
                                     @endphp
                                     <li class="sub-link">
-                                        <a style="color: gray;font-size: 16px;"
+                                        <a style="color: gray;font-size: 1rem;font-family: 'futura-pt';"
                                             href="{{ route('front.catalog') . '?childcategory=' . $childcategory->slug }}">
                                             {{ $childcategory->name }}
                                         </a>
@@ -425,137 +627,7 @@ body_theme4 @endif
 
 
 
-        <style>
-            /* .sub-link:hover {
-                color: black !important;
-            } */
-            .sub-link>a:hover {
-                color: black !important;
-            }
 
-
-            .navbar {
-                background-color: #fff;
-                border-bottom: 1px solid #eee;
-                padding: 16px 0;
-            }
-
-
-            .site-menu {
-                display: flex;
-                justify-content: center;
-                width: 100%;
-            }
-
-            .main-menu {
-                list-style: none;
-                display: flex;
-                gap: 40px;
-                justify-content: center;
-            }
-
-            .main-menu>li>a {
-                text-decoration: none;
-                color: #222;
-                font-weight: 600;
-                font-size: 16px;
-                padding: 10px;
-                display: inline-block;
-            }
-
-            .menu-item.has-dropdown {
-                position: relative;
-            }
-
-            .menu-link:hover {
-                color: red !important;
-            }
-
-            .menu-item.has-dropdown:hover>.dropdown {
-                display: flex;
-                /* animation: fadeIn 1.3s ease-in-out; */
-            }
-
-            .dropdown {
-                position: absolute;
-                top: 100%;
-                left: 200%;
-                transform: translateX(-50%);
-                width: 1000px;
-                background: #ffffff;
-                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
-                padding: 30px 40px;
-                z-index: 1000;
-                display: none;
-            }
-
-            .dropdown-inner {
-                display: flex;
-                justify-content: space-between;
-                gap: 20px;
-                flex-wrap: wrap;
-            }
-
-            /* Grid Area */
-            .dropdown-grid {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 30px;
-                flex: 1;
-            }
-
-            .dropdown-col h4 {
-                font-size: 16px;
-                font-weight: 600;
-                color: #3819e7;
-                margin-bottom: 10px;
-            }
-
-            .dropdown-col ul {
-                list-style: none;
-            }
-
-            .dropdown-col li {
-                margin-bottom: 8px;
-            }
-
-            .dropdown-col a {
-                text-decoration: none;
-                color: #333;
-                font-weight: 500;
-                transition: all 0.2s ease-in-out;
-            }
-
-            .dropdown-col a:hover {
-                color: #3819e7;
-            }
-
-            /* Right Side Image */
-            .dropdown-image {
-                width: 300px;
-                flex-shrink: 0;
-            }
-
-            .dropdown-image img {
-                width: 100%;
-                height: auto;
-                border-radius: 10px;
-                object-fit: cover;
-            }
-
-            /* Animation */
-            @keyframes fadeIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(10px);
-                }
-
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-        </style>
 
 
 
@@ -874,6 +946,21 @@ body_theme4 @endif
                 $('.navbar').toggleClass('d-none');
                 $('.navbar').toggleClass('m_navbar');
                 $('#__product__search').focus();
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('.product-thumb').find('img').click(function() {
+                var $productCard = $(this).closest('.product-card');
+                
+                var $productTitleAnchor = $productCard.find('.product-title a');
+                console.log($productTitleAnchor.attr('href'));
+                
+                window.location.href = $productTitleAnchor.attr('href');
+                
+                // window.location.href = $(this).closest('.product-title').find('a').attr('href');
             });
         });
     </script>

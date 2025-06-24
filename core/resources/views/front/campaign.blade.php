@@ -82,13 +82,13 @@
                         <h3 class="product-title"><a href="{{route('front.product',$compaign_item->item->slug)}}">
                             {{ Str::limit($compaign_item->item->name, 35) }}
                         </a></h3>
-                        <div class="rating-stars">
+                        {{-- <div class="rating-stars">
                             {!! Helper::renderStarRating($compaign_item->item->reviews->avg('rating')) !!}
-                        </div>
+                        </div> --}}
                         <h4 class="product-price">
-                        @if ($compaign_item->item->previous_price != 0)
+                        {{-- @if ($compaign_item->item->previous_price != 0)
                         <del>{{PriceHelper::setPreviousPrice($compaign_item->item->previous_price)}}</del>
-                        @endif
+                        @endif --}}
                         {{PriceHelper::grandCurrencyPrice($compaign_item->item)}}
                         </h4>
 

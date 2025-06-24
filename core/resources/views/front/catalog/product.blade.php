@@ -50,57 +50,7 @@
             padding-bottom: 1px;
             overflow: hidden;
         }
-    </style>
-    <div class="page-title">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <ul class="breadcrumbs">
-                        <li><a href="{{ route('front.index') }}">{{ __('Home') }}</a>
-                        </li>
-                        <li class="separator"></li>
-                        <li><a href="{{ route('front.catalog') }}">{{ __('Shop') }}</a>
-                        </li>
-                        <li class="separator"></li>
-                        <li>{{ $item->name }}</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Page Content-->
-    <div class="container padding-bottom-1x mb-1">
-        <div class="row">
-            <!-- Poduct Gallery-->
-            <div class="col-xxl-6 col-lg-6 col-md-6">
-                <div class="product-gallery">
-                    @if ($item->video)
-                        <div class="gallery-wrapper">
-                            <div class="gallery-item video-btn text-center">
-                                <a href="{{ $item->video }}" title="Watch video"></a>
-                            </div>
-                        </div>
-                    @endif
-                    @if ($item->is_stock())
-                        <span
-                            class="product-badge
-                        @if ($item->is_type == 'feature') bg-warning
-                        @elseif($item->is_type == 'new')
-                        bg-success
-                        @elseif($item->is_type == 'top')
-                        bg-info
-                        @elseif($item->is_type == 'best')
-                        bg-dark
-                        @elseif($item->is_type == 'flash_deal')
-                            bg-success @endif
-                        ">{{ __($item->is_type != 'undefine' ? ucfirst(str_replace('_', ' ', $item->is_type)) : '') }}</span>
-                    @else
-                        <span class="product-badge bg-secondary border-default text-body">{{ __('out of stock') }}</span>
-                    @endif
-
-
-                    <style>
-                        .gallery-wrapper {
+           .gallery-wrapper {
                             display: flex;
                             gap: 20px;
                             max-width: 900px;
@@ -175,7 +125,55 @@
                             max-width: none;
                             /* allow scaling */
                         }
-                    </style>
+    </style>
+    <div class="page-title">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <ul class="breadcrumbs">
+                        <li><a href="{{ route('front.index') }}">{{ __('Home') }}</a>
+                        </li>
+                        <li class="separator"></li>
+                        <li><a href="{{ route('front.catalog') }}">{{ __('Shop') }}</a>
+                        </li>
+                        <li class="separator"></li>
+                        <li>{{ $item->name }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Page Content-->
+    <div class="container padding-bottom-1x mb-1">
+        <div class="row">
+            <!-- Poduct Gallery-->
+            <div class="col-xxl-6 col-lg-6 col-md-6">
+                <div class="product-gallery">
+                    @if ($item->video)
+                        <div class="gallery-wrapper">
+                            <div class="gallery-item video-btn text-center">
+                                <a href="{{ $item->video }}" title="Watch video"></a>
+                            </div>
+                        </div>
+                    @endif
+                    @if ($item->is_stock())
+                        <span
+                            class="product-badge
+                        @if ($item->is_type == 'feature') bg-warning
+                        @elseif($item->is_type == 'new')
+                        bg-success
+                        @elseif($item->is_type == 'top')
+                        bg-info
+                        @elseif($item->is_type == 'best')
+                        bg-dark
+                        @elseif($item->is_type == 'flash_deal')
+                            bg-success @endif
+                        ">{{ __($item->is_type != 'undefine' ? ucfirst(str_replace('_', ' ', $item->is_type)) : '') }}</span>
+                    @else
+                        <span class="product-badge bg-secondary border-default text-body">{{ __('out of stock') }}</span>
+                    @endif
+
+
 
                     <div class="gallery-wrapper">
                         <div class="thumbnail-list">
@@ -207,70 +205,10 @@
             <div class="zoom-window" id="zoomWindow">
                 <img id="zoomedImg" src="{{ url('/core/public/storage/images/' . $item->photo) }}" alt="Zoomed Image">
             </div>
-            <script>
-                const thumbnails = document.querySelectorAll('.thumbnail');
-                const mainProdImg = document.getElementById('mainProdImg');
-                const lensBox = document.getElementById('lensBox');
-                const zoomWindow = document.getElementById('zoomWindow');
-                const zoomedImg = document.getElementById('zoomedImg');
-                const zoomWrapper = document.querySelector('.image-zoom-wrapper');
-
-                // Change main image and zoom on thumbnail click
-                thumbnails.forEach(thumb => {
-                    thumb.addEventListener('click', () => {
-                        thumbnails.forEach(t => t.classList.remove('selected'));
-                        thumb.classList.add('selected');
-                        mainProdImg.src = thumb.dataset.full;
-                        zoomedImg.src = thumb.dataset.full;
-                    });
-                });
-
-                zoomWrapper.addEventListener('mouseenter', () => {
-                    lensBox.style.display = 'block';
-                    zoomWindow.style.display = 'block';
-                    updateZoomImageSize();
-                });
-
-                zoomWrapper.addEventListener('mouseleave', () => {
-                    lensBox.style.display = 'none';
-                    zoomWindow.style.display = 'none';
-                });
-
-                zoomWrapper.addEventListener('mousemove', (e) => {
-                    const rect = zoomWrapper.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-
-                    const lensX = Math.max(0, Math.min(x - lensBox.offsetWidth / 2, zoomWrapper.offsetWidth - lensBox
-                        .offsetWidth));
-                    const lensY = Math.max(0, Math.min(y - lensBox.offsetHeight / 2, zoomWrapper.offsetHeight - lensBox
-                        .offsetHeight));
-
-                    lensBox.style.left = lensX + 'px';
-                    lensBox.style.top = lensY + 'px';
-
-                    const scaleX = zoomWindow.offsetWidth / lensBox.offsetWidth;
-                    const scaleY = zoomWindow.offsetHeight / lensBox.offsetHeight;
-
-                    zoomedImg.style.width = mainProdImg.width * scaleX + 'px';
-                    zoomedImg.style.height = mainProdImg.height * scaleY + 'px';
-
-                    zoomedImg.style.left = -lensX * scaleX + 'px';
-                    zoomedImg.style.top = -lensY * scaleY + 'px';
-                });
-
-                function updateZoomImageSize() {
-                    const scaleX = zoomWindow.offsetWidth / lensBox.offsetWidth;
-                    const scaleY = (zoomWindow.offsetHeight / lensBox.offsetHeight);
-                    zoomedImg.style.width = mainProdImg.width * scaleX + 'px';
-                    zoomedImg.style.height = 'auto'; // Maintain aspect ratio
-                }
-
-                mainProdImg.addEventListener('load', updateZoomImageSize);
-            </script>
+           
             <!-- Product Info-->
             <div class="col-xxl-6 col-lg-6 col-md-6">
-                <div class="details-page-top-right-content d-flex">
+                <div class="details-page-top-right-content d-flex" id="details-page-top-right-content">
 
                     <div class="div w-100">
 
@@ -280,11 +218,11 @@
                         <input type="hidden" value="{{ PriceHelper::setCurrencySign() }}" id="set_currency">
                         <input type="hidden" value="{{ PriceHelper::setCurrencyValue() }}" id="set_currency_val">
                         <input type="hidden" value="{{ $setting->currency_direction }}" id="currency_direction">
-                        <h4 class="mb-2 p-title-main">{{ $item->name }}</h4>
+                        <h4 class="mb-2 p-title-main" style="text-transform: capitalize;">{{ $item->name }}</h4>
                         <div class="mb-3">
-                            <div class="rating-stars d-inline-block gmr-3">
+                            {{-- <div class="rating-stars d-inline-block gmr-3">
                                 {!! Helper::renderStarRating($item->reviews->avg('rating')) !!}
-                            </div>
+                            </div> --}}
                             {{-- @if ($item->is_stock())
                                 <span class="text-success  d-inline-block">{{ __('In Stock') }} <b>({{ $item->stock }}
                                         @lang('items'))</b></span>
@@ -314,23 +252,17 @@
                                 #{{ $item->sku }}</div>
                         @endif
                         <style>
-                            /* From Uiverse.io by Yaya12085 */
                             .radio-inputs {
                                 display: flex;
                                 justify-content: center;
                                 align-items: center;
                                 max-width: 350px;
-                                -webkit-user-select: none;
-                                -moz-user-select: none;
-                                -ms-user-select: none;
                                 user-select: none;
                             }
 
                             .radio-inputs>* {
                                 margin: 6px;
                             }
-
-
 
                             .radio-input:checked+.radio-tile:before {
                                 transform: scale(1);
@@ -344,8 +276,6 @@
                                 font-weight: 600;
                             }
 
-
-
                             .radio-input:focus+.radio-tile {
                                 border-color: black;
                             }
@@ -354,7 +284,6 @@
                                 transform: scale(1);
                                 opacity: 1;
                             }
-
 
                             .radio-tile {
                                 display: flex;
@@ -370,12 +299,9 @@
                                 padding: 4px 18px;
                             }
 
-
                             .radio-tile:hover {
-                                /* border-color: #2260ff; */
                                 background-color: #f0f0f0;
                             }
-
 
                             .radio-input:checked+.radio-tile {
                                 border-color: #959595;
@@ -404,8 +330,38 @@
                             .custom-radio {
                                 margin: 0px 6px;
                             }
-                        </style>
 
+                            .attribute-alert {
+                                background: white;
+                                border: 1px solid #ddd;
+                                padding: 15px;
+                                margin-top: 10px;
+                                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                            }
+
+                            .attribute-alert .alert-text {
+                                color: red;
+                                font-weight: bold;
+                                margin-bottom: 10px;
+                            }
+
+                            .attribute-alert .alert-options {
+                                display: flex;
+                                gap: 10px;
+                                flex-wrap: wrap;
+                            }
+
+                            .attribute-alert label {
+                                border: 1px solid #000;
+                                padding: 6px 14px;
+                                cursor: pointer;
+                                font-weight: 500;
+                            }
+
+                            .attribute-alert input {
+                                display: none;
+                            }
+                        </style>
 
 
                         <div class="row margin-top-1x">
@@ -414,36 +370,95 @@
                                     <div class="col-sm-12">
                                         <div class="form-group">
                                             <label class="d-block font-weight-bold">{{ $attribute->name }}</label>
-                                            <div class="attribute_option " data-attr="{{ $attribute->id }}">
+
+                                            <div class="attribute_option" data-attr="{{ $attribute->id }}">
                                                 @foreach ($attribute->options->where('stock', '!=', '0') as $key => $option)
                                                     <label class="custom-radio {{ $key == 0 ? 'active' : '' }}">
                                                         <input class="radio-input d-none" type="radio"
                                                             name="attribute_{{ $attribute->id }}"
                                                             value="{{ $option->name }}" data-type="{{ $attribute->id }}"
                                                             data-href="{{ $option->id }}"
-                                                            data-target="{{ PriceHelper::setConvertPrice($option->price) }}"
-                                                            >
+                                                            data-target="{{ PriceHelper::setConvertPrice($option->price) }}">
                                                         <span class="radio-tile">
-
                                                             <span class="radio-label">{{ $option->name }}</span>
                                                         </span>
                                                     </label>
                                                 @endforeach
+                                            </div>
+
+                                            <!-- 🔥 Alert goes here for this attribute -->
+                                            <div class="attribute-alert"
+                                                style="display: none;position: fixed;z-index: 999;top: 0;left: 0;width: 100%;height: 100%;background-color: rgba(0, 0, 0, 0.6);justify-content: center;align-items: center;">
                                             </div>
                                         </div>
                                     </div>
                                 @endif
                             @endforeach
                         </div>
+                        <script>
+                            function check_attribute() {
+                                let allSelected = true;
 
+                                document.querySelectorAll('.attribute_option').forEach(function(group) {
+                                    const attrId = group.getAttribute('data-attr');
+                                    const selected = group.querySelector('input[type="radio"]:checked');
+                                    const alertBox = group.nextElementSibling; // get the .attribute-alert
+                                    const attributeOptionRect = group.getBoundingClientRect();
+                                    const top = (attributeOptionRect.top + window.scrollY) - 25;
+                                    const left = (attributeOptionRect.left + window.scrollX - 25);
 
+                                    if (!selected) {
+                                        allSelected = false;
 
+                                        const groupLabel = group.closest('.form-group').querySelector('label').innerText;
 
+                                        // Clone options for inline alert
+                                        const clone = group.cloneNode(true);
+                                        clone.classList.remove('attribute_option');
 
+                                        alertBox.innerHTML = `
+                                            <div style="top: ${top}px;left: ${left}px;position: fixed;background: white;padding: 1px 27px;">
+                                                <p class="alert-text">Please select a ${groupLabel.toLowerCase()}</p>
+                                                <div class="alert-options"></div>
+                                            </div>`;
+                                        alertBox.querySelector('.alert-options').appendChild(clone);
+                                        alertBox.style.display = 'block';
 
+                                        // Make alert options clickable
+                                        alertBox.querySelectorAll('input[type="radio"]').forEach(radio => {
+                                            radio.addEventListener('change', function() {
+                                                const originalRadio = group.querySelector(
+                                                    `input[value="${this.value}"]`);
+                                                if (originalRadio) {
+                                                    originalRadio.checked = true;
+                                                    alertBox.style.display = 'none';
+                                                }
+                                            });
+                                        });
 
+                                    } else {
+                                        alertBox.style.display = 'none';
+                                    }
+                                });
 
+                                if (allSelected) {
+                                    enableScroll()
+                                    return true; // All attributes are selected
+                                } else {
+                                    disableScroll();
+                                    return false; // Not all attributes are selected
+                                };
+                                // return true; // Temporarily returning true for testing
+                            }
 
+                            function disableScroll() {
+                                document.body.style.overflow = 'hidden';
+                            }
+
+                            function enableScroll() {
+                                document.body.style.overflow = 'auto';
+                            }
+                        </script>
 
                         <div class="row align-items-end pb-4">
                             <div class="col-sm-12">
@@ -455,10 +470,9 @@
                                         <input type="hidden" value="3333" id="current_stock">
                                     </div>
                                 @endif
-                                
+
                                 <div class="p-action-button">
                                     @if ($item->item_type != 'affiliate')
-                                        
                                         @if ($item->is_stock())
                                             <button class="btn btn-primary m-0 a-t-c-mr" id="add_to_cart"><i
                                                     class="icon-bag"></i><span>{{ __('Add to Cart') }}</span></button>
@@ -480,8 +494,20 @@
                         </div>
 
                         <div class="div">
-                        <button class="btn btn-primary m-0 a-t-c-mr" id="add_to_cart"><i
-                                                    class="icon-bag"></i><span>Try This Online</span></button>
+                            <button class="btn btn-primary m-0 a-t-c-mr" id="">
+                                <span><svg xmlns="http://www.w3.org/2000/svg" width="17" height="16"
+                                        viewBox="0 0 17 16" fill="none">
+                                        <path
+                                            d="M9.73089 6.51967L8.25089 7.25967M8.25089 7.25967L6.77088 6.51967M8.25089 7.25967V9.11301M14.1776 4.29301L12.6976 5.03301M14.1776 4.29301L12.6976 3.55301M14.1776 4.29301V6.14634M2.32422 4.29301L3.80422 3.55301M2.32422 4.29301L3.80422 5.03301M2.32422 4.29301V6.14634M8.25089 14.6663L6.77088 13.9263M8.25089 14.6663L9.73089 13.9263M8.25089 14.6663V12.813M12.6976 12.4463L14.1776 11.7063V9.85301M9.73089 2.07301L8.25089 1.33301L6.77088 2.07301H9.73089ZM3.80422 12.4463L2.32422 11.7063V9.85301L3.80422 12.4463Z"
+                                            stroke="#EAEAEA" stroke-linecap="round" stroke-linejoin="round" />
+                                        <path
+                                            d="M8.25088 14.6668L6.77088 13.9268M8.25088 14.6668L9.73089 13.9268M8.25088 14.6668V12.8135M3.80422 12.4468L2.32422 11.7068V9.85352L3.80422 12.4468Z"
+                                            stroke="#EAEAEA" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg> Try This Online</span>
+                                    
+                                </button>
+                                <br>
+                                <br>
                             <div class="t-c-b-area">
 
                                 <style>
@@ -522,7 +548,22 @@
 
                                 <!-- First Collapsible -->
                                 <button type="button" class="collapsible">
-                                    Product info
+                                    <div>
+                                        <i class="fas fa-ruler"></i> Size Chart
+                                    </div>
+                                    <span class="icon">&#9654;</span>
+                                </button>
+                                <div class="content_aa">
+                                    <img class="lazy" data-src="{{ url('/assets/size.jpg') }}"
+                                        src="{{ url('/assets/size.jpg') }}" alt="Size Chart"
+                                        style="width: 100%; height: auto; max-height: 500px;">
+                                </div>
+                                <!-- First Collapsible -->
+                                <button type="button" class="collapsible">
+                                    <div>
+                                        <i class="fa fa-shopping-bag" aria-hidden="true"></i> Product info
+                                    </div>
+
                                     <span class="icon">&#9654;</span>
                                 </button>
                                 <div class="content_aa">
@@ -557,7 +598,10 @@
 
                                 <!-- Second Collapsible (Example) -->
                                 <button type="button" class="collapsible">
-                                    Description
+                                    <div>
+                                        <i class="fas fa-newspaper"></i>
+                                        Description
+                                    </div>
                                     <span class="icon">&#9654;</span>
                                 </button>
                                 <div class="content_aa">
@@ -566,7 +610,10 @@
                                     </p>
                                 </div>
                                 <button type="button" class="collapsible">
-                                    Specifications
+                                    <div>
+                                        <i class="fa fa-address-book" aria-hidden="true"></i>
+                                        Specifications
+                                    </div>
                                     <span class="icon">&#9654;</span>
                                 </button>
                                 <div class="content_aa">
@@ -813,9 +860,9 @@
                                                 {{ Str::limit($related->name, 35) }}
                                             </a></h3>
                                         <h4 class="product-price">
-                                            @if ($related->previous_price != 0)
+                                            {{-- @if ($related->previous_price != 0 && $related->previous_price == PriceHelper::grandCurrencyPrice($related))
                                                 <del>{{ PriceHelper::setPreviousPrice($related->previous_price) }}</del>
-                                            @endif
+                                            @endif --}}
                                             {{ PriceHelper::grandCurrencyPrice($related) }}
                                         </h4>
                                     </div>
@@ -894,5 +941,74 @@
             </div>
         </form>
     @endauth
+
+
+     <script>
+                const thumbnails = document.querySelectorAll('.thumbnail');
+                const mainProdImg = document.getElementById('mainProdImg');
+                const lensBox = document.getElementById('lensBox');
+                const zoomWindow = document.getElementById('zoomWindow');
+                const zoomedImg = document.getElementById('zoomedImg');
+                const zoomWrapper = document.querySelector('.image-zoom-wrapper');
+                // const details_page_top_right_content = document.getElementById('details-page-top-right-content');
+
+                // var details_page_top_right_content_top = details_page_top_right_content.top;
+                // var details_page_top_right_content_left = details_page_top_right_content.left;
+
+                // zoomWindow.style.top = details_page_top_right_content_top + 'px';
+                // zoomWindow.style.left = details_page_top_right_content_left + 'px';
+                // Change main image and zoom on thumbnail click
+                thumbnails.forEach(thumb => {
+                    thumb.addEventListener('click', () => {
+                        thumbnails.forEach(t => t.classList.remove('selected'));
+                        thumb.classList.add('selected');
+                        mainProdImg.src = thumb.dataset.full;
+                        zoomedImg.src = thumb.dataset.full;
+                    });
+                });
+
+                zoomWrapper.addEventListener('mouseenter', () => {
+                    lensBox.style.display = 'block';
+                    zoomWindow.style.display = 'block';
+                    updateZoomImageSize();
+                });
+
+                zoomWrapper.addEventListener('mouseleave', () => {
+                    lensBox.style.display = 'none';
+                    zoomWindow.style.display = 'none';
+                });
+
+                zoomWrapper.addEventListener('mousemove', (e) => {
+                    const rect = zoomWrapper.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+
+                    const lensX = Math.max(0, Math.min(x - lensBox.offsetWidth / 2, zoomWrapper.offsetWidth - lensBox
+                        .offsetWidth));
+                    const lensY = Math.max(0, Math.min(y - lensBox.offsetHeight / 2, zoomWrapper.offsetHeight - lensBox
+                        .offsetHeight));
+
+                    lensBox.style.left = lensX + 'px';
+                    lensBox.style.top = lensY + 'px';
+
+                    const scaleX = zoomWindow.offsetWidth / lensBox.offsetWidth;
+                    const scaleY = zoomWindow.offsetHeight / lensBox.offsetHeight;
+
+                    zoomedImg.style.width = mainProdImg.width * scaleX + 'px';
+                    zoomedImg.style.height = mainProdImg.height * scaleY + 'px';
+
+                    zoomedImg.style.left = -lensX * scaleX + 'px';
+                    zoomedImg.style.top = -lensY * scaleY + 'px';
+                });
+
+                function updateZoomImageSize() {
+                    const scaleX = zoomWindow.offsetWidth / lensBox.offsetWidth;
+                    const scaleY = (zoomWindow.offsetHeight / lensBox.offsetHeight);
+                    zoomedImg.style.width = mainProdImg.width * scaleX + 'px';
+                    zoomedImg.style.height = 'auto'; // Maintain aspect ratio
+                }
+
+                mainProdImg.addEventListener('load', updateZoomImageSize);
+            </script>
 
 @endsection

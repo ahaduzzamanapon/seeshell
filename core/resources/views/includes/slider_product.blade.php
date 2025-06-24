@@ -29,9 +29,9 @@
                     <i class="fas fa-star filled"></i><i class="fas fa-star filled"></i><i class="fas fa-star filled"></i><i class="fas fa-star filled"></i><i class="fas fa-star filled"></i>
                     </div>
                     <h4 class="product-price">
-                        @if ($item->previous_price !=0)
+                        {{-- @if ($item->previous_price !=0)
                         <del>{{PriceHelper::setPreviousPrice($item->previous_price)}}</del>
-                        @endif
+                        @endif --}}
                         {{PriceHelper::grandCurrencyPrice($item)}}
                         </h4>
                 </div>

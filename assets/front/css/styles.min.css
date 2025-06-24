@@ -5606,36 +5606,39 @@ video {
   font-size: 12px;
 }
 .product-card {
-  display: block;
-  position: relative;
-  width: 100%;
-  border-radius: 10px;
-  background-color: #fff;
-  overflow: hidden;
-  border: 1px solid #fff;
-  -webkit-transition: 0.3s linear;
-  -moz-transition: 0.3s linear;
-  transition: 0.3s linear;
+    display: block;
+    position: relative;
+    width: 100%;
+    border-radius: 10px;
+    background-color: #fff;
+    overflow: hidden;
+    border: 1px solid #fff;
+    -webkit-transition: 0.3s linear;
+    -moz-transition: 0.3s linear;
+    transition: 0.3s linear;
+    height: 400px;
 }
 .product-card .product-card-body {
   padding: 15px 15px 10px;
 }
 .product-card .product-thumb {
-  display: block;
-  width: 100%;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-  overflow: hidden;
-  position: relative;
+    display: block;
+    width: 100%;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    overflow: hidden;
+    position: relative;
+    height: 71%;
 }
 .product-card .product-thumb > img {
-  display: block;
-  width: 100%;
-  padding-top: 0;
-  transform: scale(1);
-  -webkit-transition: 0.3s linear;
-  -moz-transition: 0.3s linear;
-  transition: 0.3s linear;
+    display: block;
+    width: 100%;
+    padding-top: 0;
+    transform: scale(1);
+    -webkit-transition: 0.3s linear;
+    -moz-transition: 0.3s linear;
+    transition: 0.3s linear;
+    height: 100%;
 }
 .genius-banner:hover img,
 .product-card:hover .product-thumb > img,

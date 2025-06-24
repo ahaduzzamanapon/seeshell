@@ -981,6 +981,10 @@ $(function ($) {
         })
         .get();
         console.log(options_ids,attribute_ids);
+        var all_check = check_attribute()
+        if(all_check == false){
+          return false;
+        }
         
 
       let quantity;

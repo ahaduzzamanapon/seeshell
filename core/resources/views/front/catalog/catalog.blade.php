@@ -41,13 +41,13 @@
                     <h3 class="product-title"><a href="{{route('front.product',$item->slug)}}">
                         {{ Str::limit($item->name, 38) }}
                     </a></h3>
-                    <div class="rating-stars">
+                    {{-- <div class="rating-stars">
                         {!! Helper::renderStarRating($item->reviews->avg('rating'))!!}
-                    </div>
+                    </div> --}}
                     <h4 class="product-price">
-                        @if ($item->previous_price !=0)
+                        {{-- @if ($item->previous_price !=0)
                         <del>{{PriceHelper::setPreviousPrice($item->previous_price)}}</del>
-                        @endif
+                        @endif --}}
                         {{PriceHelper::grandCurrencyPrice($item)}}
                     </h4>
                 </div>
@@ -96,13 +96,13 @@
                                     <h3 class="product-title"><a href="{{route('front.product',$item->slug)}}">
                                         {{ Str::limit($item->name, 52) }}
                                     </a></h3>
-                                    <div class="rating-stars">
+                                    {{-- <div class="rating-stars">
                                         {!! Helper::renderStarRating($item->reviews->avg('rating')) !!}
-                                    </div>
+                                    </div> --}}
                                     <h4 class="product-price">
-                                        @if ($item->previous_price !=0)
+                                        {{-- @if ($item->previous_price !=0)
                                         <del>{{PriceHelper::setPreviousPrice($item->previous_price)}}</del>
-                                        @endif
+                                        @endif --}}
                                         {{PriceHelper::grandCurrencyPrice($item)}}
                                     </h4>
                                     <p class="text-sm sort_details_show  text-muted hidden-xs-down my-1">

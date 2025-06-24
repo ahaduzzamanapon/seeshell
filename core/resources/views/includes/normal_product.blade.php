@@ -19,13 +19,13 @@
                         <h3 class="product-title"><a href="{{route('front.product',$item->slug)}}">
                             {{ Str::limit($item->name, 45) }}
                         </a></h3>
-                        <div class="rating-stars">
+                        {{-- <div class="rating-stars">
                         <i class="fas fa-star filled"></i><i class="fas fa-star filled"></i><i class="fas fa-star filled"></i><i class="fas fa-star filled"></i><i class="fas fa-star filled"></i>
-                        </div>
+                        </div> --}}
                         <h4 class="product-price">
-                            @if ($item->previous_price !=0)
+                            {{-- @if ($item->previous_price !=0)
                             <del>{{PriceHelper::setPreviousPrice($item->previous_price)}}</del>
-                            @endif
+                            @endif --}}
                             {{PriceHelper::grandCurrencyPrice($item)}}
                             </h4>
                     </div>

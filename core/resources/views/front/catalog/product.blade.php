@@ -50,7 +50,57 @@
             padding-bottom: 1px;
             overflow: hidden;
         }
-           .gallery-wrapper {
+    </style>
+    <div class="page-title">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <ul class="breadcrumbs">
+                        <li><a href="{{ route('front.index') }}">{{ __('Home') }}</a>
+                        </li>
+                        <li class="separator"></li>
+                        <li><a href="{{ route('front.catalog') }}">{{ __('Shop') }}</a>
+                        </li>
+                        <li class="separator"></li>
+                        <li>{{ $item->name }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Page Content-->
+    <div class="container padding-bottom-1x mb-1">
+        <div class="row">
+            <!-- Poduct Gallery-->
+            <div class="col-xxl-6 col-lg-6 col-md-6">
+                <div class="product-gallery">
+                    @if ($item->video)
+                        <div class="gallery-wrapper">
+                            <div class="gallery-item video-btn text-center">
+                                <a href="{{ $item->video }}" title="Watch video"></a>
+                            </div>
+                        </div>
+                    @endif
+                    @if ($item->is_stock())
+                        <span
+                            class="product-badge
+                        @if ($item->is_type == 'feature') bg-warning
+                        @elseif($item->is_type == 'new')
+                        bg-success
+                        @elseif($item->is_type == 'top')
+                        bg-info
+                        @elseif($item->is_type == 'best')
+                        bg-dark
+                        @elseif($item->is_type == 'flash_deal')
+                            bg-success @endif
+                        ">{{ __($item->is_type != 'undefine' ? ucfirst(str_replace('_', ' ', $item->is_type)) : '') }}</span>
+                    @else
+                        <span class="product-badge bg-secondary border-default text-body">{{ __('out of stock') }}</span>
+                    @endif
+
+
+                    <style>
+                        .gallery-wrapper {
                             display: flex;
                             gap: 20px;
                             max-width: 900px;
@@ -125,55 +175,7 @@
                             max-width: none;
                             /* allow scaling */
                         }
-    </style>
-    <div class="page-title">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <ul class="breadcrumbs">
-                        <li><a href="{{ route('front.index') }}">{{ __('Home') }}</a>
-                        </li>
-                        <li class="separator"></li>
-                        <li><a href="{{ route('front.catalog') }}">{{ __('Shop') }}</a>
-                        </li>
-                        <li class="separator"></li>
-                        <li>{{ $item->name }}</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Page Content-->
-    <div class="container padding-bottom-1x mb-1">
-        <div class="row">
-            <!-- Poduct Gallery-->
-            <div class="col-xxl-6 col-lg-6 col-md-6">
-                <div class="product-gallery">
-                    @if ($item->video)
-                        <div class="gallery-wrapper">
-                            <div class="gallery-item video-btn text-center">
-                                <a href="{{ $item->video }}" title="Watch video"></a>
-                            </div>
-                        </div>
-                    @endif
-                    @if ($item->is_stock())
-                        <span
-                            class="product-badge
-                        @if ($item->is_type == 'feature') bg-warning
-                        @elseif($item->is_type == 'new')
-                        bg-success
-                        @elseif($item->is_type == 'top')
-                        bg-info
-                        @elseif($item->is_type == 'best')
-                        bg-dark
-                        @elseif($item->is_type == 'flash_deal')
-                            bg-success @endif
-                        ">{{ __($item->is_type != 'undefine' ? ucfirst(str_replace('_', ' ', $item->is_type)) : '') }}</span>
-                    @else
-                        <span class="product-badge bg-secondary border-default text-body">{{ __('out of stock') }}</span>
-                    @endif
-
-
+                    </style>
 
                     <div class="gallery-wrapper">
                         <div class="thumbnail-list">
@@ -205,7 +207,73 @@
             <div class="zoom-window" id="zoomWindow">
                 <img id="zoomedImg" src="{{ url('/core/public/storage/images/' . $item->photo) }}" alt="Zoomed Image">
             </div>
-           
+            <script>
+                const thumbnails = document.querySelectorAll('.thumbnail');
+                const mainProdImg = document.getElementById('mainProdImg');
+                const lensBox = document.getElementById('lensBox');
+                const zoomWindow = document.getElementById('zoomWindow');
+                const zoomedImg = document.getElementById('zoomedImg');
+                const zoomWrapper = document.querySelector('.image-zoom-wrapper');
+                // const details_page_top_right_content = document.getElementById('details-page-top-right-content');
+
+                // var details_page_top_right_content_top = details_page_top_right_content.top;
+                // var details_page_top_right_content_left = details_page_top_right_content.left;
+
+                // zoomWindow.style.top = details_page_top_right_content_top + 'px';
+                // zoomWindow.style.left = details_page_top_right_content_left + 'px';
+                // Change main image and zoom on thumbnail click
+                thumbnails.forEach(thumb => {
+                    thumb.addEventListener('click', () => {
+                        thumbnails.forEach(t => t.classList.remove('selected'));
+                        thumb.classList.add('selected');
+                        mainProdImg.src = thumb.dataset.full;
+                        zoomedImg.src = thumb.dataset.full;
+                    });
+                });
+
+                zoomWrapper.addEventListener('mouseenter', () => {
+                    lensBox.style.display = 'block';
+                    zoomWindow.style.display = 'block';
+                    updateZoomImageSize();
+                });
+
+                zoomWrapper.addEventListener('mouseleave', () => {
+                    lensBox.style.display = 'none';
+                    zoomWindow.style.display = 'none';
+                });
+
+                zoomWrapper.addEventListener('mousemove', (e) => {
+                    const rect = zoomWrapper.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+
+                    const lensX = Math.max(0, Math.min(x - lensBox.offsetWidth / 2, zoomWrapper.offsetWidth - lensBox
+                        .offsetWidth));
+                    const lensY = Math.max(0, Math.min(y - lensBox.offsetHeight / 2, zoomWrapper.offsetHeight - lensBox
+                        .offsetHeight));
+
+                    lensBox.style.left = lensX + 'px';
+                    lensBox.style.top = lensY + 'px';
+
+                    const scaleX = zoomWindow.offsetWidth / lensBox.offsetWidth;
+                    const scaleY = zoomWindow.offsetHeight / lensBox.offsetHeight;
+
+                    zoomedImg.style.width = mainProdImg.width * scaleX + 'px';
+                    zoomedImg.style.height = mainProdImg.height * scaleY + 'px';
+
+                    zoomedImg.style.left = -lensX * scaleX + 'px';
+                    zoomedImg.style.top = -lensY * scaleY + 'px';
+                });
+
+                function updateZoomImageSize() {
+                    const scaleX = zoomWindow.offsetWidth / lensBox.offsetWidth;
+                    const scaleY = (zoomWindow.offsetHeight / lensBox.offsetHeight);
+                    zoomedImg.style.width = mainProdImg.width * scaleX + 'px';
+                    zoomedImg.style.height = 'auto'; // Maintain aspect ratio
+                }
+
+                mainProdImg.addEventListener('load', updateZoomImageSize);
+            </script>
             <!-- Product Info-->
             <div class="col-xxl-6 col-lg-6 col-md-6">
                 <div class="details-page-top-right-content d-flex" id="details-page-top-right-content">
@@ -504,10 +572,10 @@
                                             d="M8.25088 14.6668L6.77088 13.9268M8.25088 14.6668L9.73089 13.9268M8.25088 14.6668V12.8135M3.80422 12.4468L2.32422 11.7068V9.85352L3.80422 12.4468Z"
                                             stroke="#EAEAEA" stroke-linecap="round" stroke-linejoin="round" />
                                     </svg> Try This Online</span>
-                                    
-                                </button>
-                                <br>
-                                <br>
+
+                            </button>
+                            <br>
+                            <br>
                             <div class="t-c-b-area">
 
                                 <style>
@@ -941,74 +1009,5 @@
             </div>
         </form>
     @endauth
-
-
-     <script>
-                const thumbnails = document.querySelectorAll('.thumbnail');
-                const mainProdImg = document.getElementById('mainProdImg');
-                const lensBox = document.getElementById('lensBox');
-                const zoomWindow = document.getElementById('zoomWindow');
-                const zoomedImg = document.getElementById('zoomedImg');
-                const zoomWrapper = document.querySelector('.image-zoom-wrapper');
-                // const details_page_top_right_content = document.getElementById('details-page-top-right-content');
-
-                // var details_page_top_right_content_top = details_page_top_right_content.top;
-                // var details_page_top_right_content_left = details_page_top_right_content.left;
-
-                // zoomWindow.style.top = details_page_top_right_content_top + 'px';
-                // zoomWindow.style.left = details_page_top_right_content_left + 'px';
-                // Change main image and zoom on thumbnail click
-                thumbnails.forEach(thumb => {
-                    thumb.addEventListener('click', () => {
-                        thumbnails.forEach(t => t.classList.remove('selected'));
-                        thumb.classList.add('selected');
-                        mainProdImg.src = thumb.dataset.full;
-                        zoomedImg.src = thumb.dataset.full;
-                    });
-                });
-
-                zoomWrapper.addEventListener('mouseenter', () => {
-                    lensBox.style.display = 'block';
-                    zoomWindow.style.display = 'block';
-                    updateZoomImageSize();
-                });
-
-                zoomWrapper.addEventListener('mouseleave', () => {
-                    lensBox.style.display = 'none';
-                    zoomWindow.style.display = 'none';
-                });
-
-                zoomWrapper.addEventListener('mousemove', (e) => {
-                    const rect = zoomWrapper.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-
-                    const lensX = Math.max(0, Math.min(x - lensBox.offsetWidth / 2, zoomWrapper.offsetWidth - lensBox
-                        .offsetWidth));
-                    const lensY = Math.max(0, Math.min(y - lensBox.offsetHeight / 2, zoomWrapper.offsetHeight - lensBox
-                        .offsetHeight));
-
-                    lensBox.style.left = lensX + 'px';
-                    lensBox.style.top = lensY + 'px';
-
-                    const scaleX = zoomWindow.offsetWidth / lensBox.offsetWidth;
-                    const scaleY = zoomWindow.offsetHeight / lensBox.offsetHeight;
-
-                    zoomedImg.style.width = mainProdImg.width * scaleX + 'px';
-                    zoomedImg.style.height = mainProdImg.height * scaleY + 'px';
-
-                    zoomedImg.style.left = -lensX * scaleX + 'px';
-                    zoomedImg.style.top = -lensY * scaleY + 'px';
-                });
-
-                function updateZoomImageSize() {
-                    const scaleX = zoomWindow.offsetWidth / lensBox.offsetWidth;
-                    const scaleY = (zoomWindow.offsetHeight / lensBox.offsetHeight);
-                    zoomedImg.style.width = mainProdImg.width * scaleX + 'px';
-                    zoomedImg.style.height = 'auto'; // Maintain aspect ratio
-                }
-
-                mainProdImg.addEventListener('load', updateZoomImageSize);
-            </script>
 
 @endsection
